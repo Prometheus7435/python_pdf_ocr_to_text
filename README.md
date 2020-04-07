@@ -5,7 +5,7 @@ Learning how to impliment a python script to read a pdf file using tesseract and
 ## Python
 - pytesseract
 - pdf2image
-- Python Image Library (PIL), if you want to save into seperate image files
+- Python Image Library (PIL), if you want to use saved image files as the tesseract input
 
 ## system
 - tesseract
