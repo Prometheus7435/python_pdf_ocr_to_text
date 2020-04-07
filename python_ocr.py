@@ -3,12 +3,18 @@
 
 import os
 import sys
-# from PIL import Image
+
 import pytesseract
 from pdf2image import convert_from_path
 
 
 def save_pages(pdf, pages):
+    """
+    If you need to have seperate image files of the pages in the pdf. This will
+    convert the pages into seperate jpeg files
+    Reference the pdf2image page for other options:
+    https://github.com/Belval/pdf2image
+    """
     for i, page in enumerate(pages):
         page.save(os.path.basename(pdf[:-4]) +
                   "_page_" + str(i + 1) + ".jpg", 'JPEG')
@@ -45,14 +51,14 @@ def pdf_parse(pdf):
 
     outfile = pdf[:-3] + 'txt'
 
-    # you can save the pages as images but it is not neccessary in order for the script to work
+    # save the pages as images but it is not neccessary in order for it to work
     # save_pages(pdf, pages)
 
     with open(outfile, 'a') as text_results:
 
-        for i in pages:
+        for page in pages:
             # Recognize the text as string in image using pytesserct
-            text = str(((pytesseract.image_to_string(i))))
+            text = str(((pytesseract.image_to_string(page))))
 
             text = text.replace('-\n', '')
 
@@ -74,3 +80,5 @@ if __name__ == '__main__':
 
     for pdf_to_parse in PDFS:
         pdf_parse(pdf_to_parse)
+
+        # text_parser(text)
