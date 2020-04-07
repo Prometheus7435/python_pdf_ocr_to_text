@@ -2,6 +2,7 @@
 # https://www.geeksforgeeks.org/python-reading-contents-of-pdf-using-ocr-optical-character-recognition/
 
 import os
+import sys
 # from PIL import Image
 import pytesseract
 from pdf2image import convert_from_path
@@ -13,8 +14,19 @@ def save_pages(pdf, pages):
                   "_page_" + str(i + 1) + ".jpg", 'JPEG')
 
 
+def text_parser(txt):
+    """
+    If you wanted to incorporate some kind of text parsing based on the results
+    from the pdf_parse.
+    """
+    for line in txt:
+        print(line)
+
+
 def pdf_parse(pdf):
     """
+    Documentation from original script this is based on:
+
     The recognized text is stored in variable text
     Any string processing may be applied on text
     Here, basic formatting has been done:
@@ -25,25 +37,22 @@ def pdf_parse(pdf):
     orGeeks is half on first line, remaining on next.
     To remove this, we replace every '-\n' to ''
     """
-    pages = convert_from_path(pdf, 500)
+
+    # most printers use dpi of 300. Using this, I think, is a good starting point
+    # for resolution. The smaller you go, the faster it will run but, potentially,
+    # the less accurate it becomes
+    pages = convert_from_path(pdf, dpi=300)
 
     outfile = pdf[:-3] + 'txt'
 
     # you can save the pages as images but it is not neccessary in order for the script to work
-    # for i, page in enumerate(pages):
-    #     page.save(os.path.basename(pdf[:-4]) +
-    #               "_page_" + str(i + 1) + ".jpg", 'JPEG')
+    # save_pages(pdf, pages)
 
     with open(outfile, 'a') as text_results:
 
         for i in pages:
-            # for i in range(len(pages)):
-            # filename = os.path.basename(
-            # pdf[:-4]) + "_page_" + str(i + 1) + ".jpg"
-
             # Recognize the text as string in image using pytesserct
             text = str(((pytesseract.image_to_string(i))))
-            # text = str(((pytesseract.image_to_string(Image.open(filename)))))
 
             text = text.replace('-\n', '')
 
@@ -51,10 +60,17 @@ def pdf_parse(pdf):
 
 
 if __name__ == '__main__':
+    # if you want to run in one command
+    DOC_FOLDER = sys.argv[1]
+
+    # interactive with user
     # DOC_FOLDER = input("Where are the pdf's you want to scrub?\n")
-    DOC_FOLDER = r'/home/zach/Coding/python_ocr/'
-    PDFS = [os.path.join(DOC_FOLDER,
-                         pdf) for pdf in os.listdir(
-        DOC_FOLDER) if pdf.endswith('.pdf')]
-    for pdf in PDFS:
-        pdf_parse(pdf)
+
+    # for testing
+    # DOC_FOLDER = r'/home/zach/Coding/python_pdf_ocr_to_text/'
+
+    PDFS = [os.path.join(DOC_FOLDER, pdf)
+            for pdf in os.listdir(DOC_FOLDER) if pdf.endswith('.pdf')]
+
+    for pdf_to_parse in PDFS:
+        pdf_parse(pdf_to_parse)
